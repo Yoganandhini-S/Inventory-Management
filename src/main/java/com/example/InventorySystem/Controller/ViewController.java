@@ -137,24 +137,29 @@ public class ViewController {
     
   
 
-    @GetMapping("/home")
-    public String home(HttpSession session, Model model) {
-        if (session.getAttribute("user") == null) return "redirect:/";
+   // @GetMapping("/home")
+    //public String home(HttpSession session, Model model) {
+       // if (session.getAttribute("user") == null) return "redirect:/";
 
-        List<InventoryItem> items = repository.findAll();
-        int totalItems = items.size();
-        int totalQuantity = items.stream().mapToInt(InventoryItem::getQuantity).sum();
-        double totalValue = items.stream().mapToDouble(item -> item.getPrice() * item.getQuantity()).sum();
-        List<InventoryItem> recentItems = items.stream()
-                .sorted((a, b) -> b.getId().compareTo(a.getId()))
-                .limit(3)
-                .toList();
+       // List<InventoryItem> items = repository.findAll();
+       // int totalItems = items.size();
+       // int totalQuantity = items.stream().mapToInt(InventoryItem::getQuantity).sum();
+       // double totalValue = items.stream().mapToDouble(item -> item.getPrice() * item.getQuantity()).sum();
+       // List<InventoryItem> recentItems = items.stream()
+               // .sorted((a, b) -> b.getId().compareTo(a.getId()))
+               // .limit(3)
+               // .toList();
 
-        model.addAttribute("totalItems", totalItems);
-        model.addAttribute("totalQuantity", totalQuantity);
-        model.addAttribute("totalValue", totalValue);
-        model.addAttribute("recentItems", recentItems);
-        return "home";
-    }
+      //  model.addAttribute("totalItems", totalItems);
+      //  model.addAttribute("totalQuantity", totalQuantity);
+      //  model.addAttribute("totalValue", totalValue);
+       // model.addAttribute("recentItems", recentItems);
+       // return "home";
+ //   }
+    @GetMapping("/")
+public String home() {
+    return "home";
+}
+
     
 }
