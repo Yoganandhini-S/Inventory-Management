@@ -1,7 +1,7 @@
 package com.example.InventorySystem.Controller;
 
 import com.example.InventorySystem.model.InventoryItem;
-//import com.example.InventorySystem.model.User;
+import com.example.InventorySystem.model.User;
 import com.example.InventorySystem.repository.InventoryRepository;
 import com.example.InventorySystem.repository.UserRepository;
 
@@ -22,18 +22,19 @@ public class ViewController {
     @Autowired
     private UserRepository userRepo;
 
-    // LOGIN PAGE
-    //@GetMapping("/")
-   // public String showLoginPage() {
-       // return "login"; // login.jsp
-    //}
-
+    // Redirect root to login
     @GetMapping("/")
-public String loginRedirect() {
-    return "redirect:/login";
-}
+    public String loginRedirect() {
+        return "redirect:/login";
+    }
 
-    // LOGIN HANDLER (Database based)
+    // LOGIN PAGE (GET)
+    @GetMapping("/login")
+    public String showLoginPage() {
+        return "login";  // login.jsp
+    }
+
+    // LOGIN HANDLER (POST)
     @PostMapping("/login")
     public String login(@RequestParam String username,
                         @RequestParam String password,
@@ -41,9 +42,9 @@ public String loginRedirect() {
         User user = userRepo.findByUsername(username);
         if (user != null && user.getPassword().equals(password)) {
             session.setAttribute("user", username);
-            return "redirect:/home"; // Redirect to add page
+            return "redirect:/dashboard";
         } else {
-            return "redirect:/?error=true";
+            return "redirect:/login?error=true";
         }
     }
 
@@ -64,57 +65,72 @@ public String loginRedirect() {
 
         User newUser = new User();
         newUser.setUsername(username);
-        newUser.setPassword(password);  // 🔒 Consider hashing for production
+        newUser.setPassword(password);  // 🔒 Hash in production
         userRepo.save(newUser);
 
         session.setAttribute("user", username);
-        return "redirect:/";
+        return "redirect:/dashboard";
     }
 
     // LOGOUT
     @GetMapping("/logout")
     public String logout(HttpSession session) {
-       session.invalidate();
-        return "redirect:/";
+        session.invalidate();
+        return "redirect:/login";
+    }
+
+    // DASHBOARD
+    @GetMapping("/dashboard")
+    public String dashboard(HttpSession session, Model model) {
+        if (session.getAttribute("user") == null) return "redirect:/login";
+
+        List<InventoryItem> items = repository.findAll();
+        model.addAttribute("totalItems", items.size());
+        model.addAttribute("totalQuantity", items.stream().mapToInt(InventoryItem::getQuantity).sum());
+        model.addAttribute("totalValue", items.stream().mapToDouble(item -> item.getPrice() * item.getQuantity()).sum());
+        model.addAttribute("recentItems", items.stream().sorted((a, b) -> b.getId().compareTo(a.getId())).limit(3).toList());
+
+        return "home";  // home.jsp
+    }
+
+    // SHOW INVENTORY
+    @GetMapping("/inventory")
+    public String showInventory(HttpSession session, Model model) {
+        if (session.getAttribute("user") == null) return "redirect:/login";
+
+        model.addAttribute("items", repository.findAll());
+        return "inventory";
     }
 
     // SHOW ADD FORM
     @GetMapping("/add")
     public String showAddForm(HttpSession session) {
-        if (session.getAttribute("user") == null) return "redirect:/";
-        return "add"; // add.jsp
+        if (session.getAttribute("user") == null) return "redirect:/login";
+        return "add";
     }
 
     // SAVE NEW ITEM
     @PostMapping("/save")
     public String saveItem(@ModelAttribute InventoryItem item, HttpSession session) {
-        if (session.getAttribute("user") == null) return "redirect:/";
+        if (session.getAttribute("user") == null) return "redirect:/login";
         repository.save(item);
         return "redirect:/inventory";
     }
 
-    // SHOW INVENTORY
-    @GetMapping("/inventory")
-    public String showInventory(Model model, HttpSession session) {
-        if (session.getAttribute("user") == null) return "redirect:/";
-        List<InventoryItem> items = repository.findAll();
-        model.addAttribute("items", items);
-        return "inventory"; // inventory.jsp
-    }
-
     // SHOW UPDATE FORM
     @GetMapping("/update")
-    public String showUpdateForm(@RequestParam Long id, Model model, HttpSession session) {
-        if (session.getAttribute("user") == null) return "redirect:/";
+    public String showUpdateForm(@RequestParam Long id, HttpSession session, Model model) {
+        if (session.getAttribute("user") == null) return "redirect:/login";
+
         InventoryItem item = repository.findById(id).orElse(null);
         model.addAttribute("item", item);
-        return "update"; // update.jsp
+        return "update";
     }
 
     // HANDLE UPDATE
     @PostMapping("/updateItem")
     public String updateItem(@ModelAttribute InventoryItem updatedItem, HttpSession session) {
-        if (session.getAttribute("user") == null) return "redirect:/";
+        if (session.getAttribute("user") == null) return "redirect:/login";
         repository.save(updatedItem);
         return "redirect:/inventory";
     }
@@ -122,74 +138,8 @@ public String loginRedirect() {
     // DELETE ITEM
     @GetMapping("/delete")
     public String deleteItem(@RequestParam Long id, HttpSession session) {
-        if (session.getAttribute("user") == null) return "redirect:/";
+        if (session.getAttribute("user") == null) return "redirect:/login";
         repository.deleteById(id);
         return "redirect:/inventory";
     }
-    
-    //@GetMapping("/logout")
-    //public String logout(HttpSession session) {
-        //String username = (String) session.getAttribute("user");
-        //if (username != null) {
-          //  User user = userRepo.findByUsername(username);
-           // if (user != null) {
-               // userRepo.delete(user); // ⚠️ deletes user permanently
-           // }
-       // }
-        //session.invalidate();
-        //return "redirect:/";
-   // }
-    
-  
-
-   // @GetMapping("/home")
-    //public String home(HttpSession session, Model model) {
-       // if (session.getAttribute("user") == null) return "redirect:/";
-
-       // List<InventoryItem> items = repository.findAll();
-       // int totalItems = items.size();
-       // int totalQuantity = items.stream().mapToInt(InventoryItem::getQuantity).sum();
-       // double totalValue = items.stream().mapToDouble(item -> item.getPrice() * item.getQuantity()).sum();
-       // List<InventoryItem> recentItems = items.stream()
-               // .sorted((a, b) -> b.getId().compareTo(a.getId()))
-               // .limit(3)
-               // .toList();
-
-      //  model.addAttribute("totalItems", totalItems);
-      //  model.addAttribute("totalQuantity", totalQuantity);
-      //  model.addAttribute("totalValue", totalValue);
-       // model.addAttribute("recentItems", recentItems);
-       // return "home";
- //   }
-
-    @GetMapping("/dashboard")
-public String dashboard(HttpSession session, Model model) {
-    if (session.getAttribute("user") == null) return "redirect:/login";
-
-    List<InventoryItem> items = repository.findAll();
-    int totalItems = items.size();
-    int totalQuantity = items.stream().mapToInt(InventoryItem::getQuantity).sum();
-    double totalValue = items.stream().mapToDouble(item -> item.getPrice() * item.getQuantity()).sum();
-    List<InventoryItem> recentItems = items.stream()
-            .sorted((a, b) -> b.getId().compareTo(a.getId()))
-            .limit(3)
-            .toList();
-
-    model.addAttribute("totalItems", totalItems);
-    model.addAttribute("totalQuantity", totalQuantity);
-    model.addAttribute("totalValue", totalValue);
-    model.addAttribute("recentItems", recentItems);
-
-    return "home";
-}
-
-
-
-    
-    @GetMapping("/")
-public String home() {
-    return "home";
-}
-
-    
 }
