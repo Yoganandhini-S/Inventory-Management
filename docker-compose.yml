@@ -21,7 +21,7 @@ services:
     depends_on:
       - mysql-inventory
     ports:
-      - "8087:8087"
+      - "8081:8081"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-inventory:3306/inventory
       SPRING_DATASOURCE_USERNAME: root
