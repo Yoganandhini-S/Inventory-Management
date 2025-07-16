@@ -63,14 +63,14 @@ public class ViewController {
         userRepo.save(newUser);
 
         session.setAttribute("user", username);
-        return "redirect:/";
+        return "redirect:/login";
     }
 
     // LOGOUT
     @GetMapping("/logout")
     public String logout(HttpSession session) {
        session.invalidate();
-        return "redirect:/";
+        return "redirect:/login";
     }
 
     // SHOW ADD FORM
