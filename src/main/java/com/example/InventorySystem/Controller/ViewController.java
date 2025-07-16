@@ -23,7 +23,7 @@ public class ViewController {
     private UserRepository userRepo;
 
     // LOGIN PAGE
-    @GetMapping("/")
+    @GetMapping("/login")
     public String showLoginPage() {
         return "login"; // login.jsp
     }
