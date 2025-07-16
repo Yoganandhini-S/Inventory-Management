@@ -25,7 +25,7 @@ public class ViewController {
     // LOGIN PAGE
     @GetMapping("/login")
     public String showLoginPage() {
-        return "login"; // login.jsp
+        return "/WEB-INF/views/login"; // login.jsp
     }
 
     // LOGIN HANDLER (Database based)
@@ -36,7 +36,7 @@ public class ViewController {
         User user = userRepo.findByUsername(username);
         if (user != null && user.getPassword().equals(password)) {
             session.setAttribute("user", username);
-            return "redirect:/home"; // Redirect to add page
+            return "redirect:/WEB-INF/views/home"; // Redirect to add page
         } else {
             return "redirect:/?error=true";
         }
@@ -45,7 +45,7 @@ public class ViewController {
     // SIGNUP PAGE
     @GetMapping("/signup")
     public String showSignupPage() {
-        return "signup";  // signup.jsp
+        return "/WEB-INF/views/signup";  // signup.jsp
     }
 
     // SIGNUP HANDLER
@@ -63,21 +63,21 @@ public class ViewController {
         userRepo.save(newUser);
 
         session.setAttribute("user", username);
-        return "redirect:/";
+        return "redirect:/WEB-INF/views/";
     }
 
     // LOGOUT
     @GetMapping("/logout")
     public String logout(HttpSession session) {
        session.invalidate();
-        return "redirect:/";
+        return "redirect:/WEB-INF/views/";
     }
 
     // SHOW ADD FORM
     @GetMapping("/add")
     public String showAddForm(HttpSession session) {
         if (session.getAttribute("user") == null) return "redirect:/";
-        return "add"; // add.jsp
+        return "/WEB-INF/views/add"; // add.jsp
     }
 
     // SAVE NEW ITEM
@@ -85,7 +85,7 @@ public class ViewController {
     public String saveItem(@ModelAttribute InventoryItem item, HttpSession session) {
         if (session.getAttribute("user") == null) return "redirect:/";
         repository.save(item);
-        return "redirect:/inventory";
+        return "redirect:/WEB-INF/views/inventory";
     }
 
     // SHOW INVENTORY
@@ -94,7 +94,7 @@ public class ViewController {
         if (session.getAttribute("user") == null) return "redirect:/";
         List<InventoryItem> items = repository.findAll();
         model.addAttribute("items", items);
-        return "inventory"; // inventory.jsp
+        return "/WEB-INF/views/inventory"; // inventory.jsp
     }
 
     // SHOW UPDATE FORM
@@ -103,7 +103,7 @@ public class ViewController {
         if (session.getAttribute("user") == null) return "redirect:/";
         InventoryItem item = repository.findById(id).orElse(null);
         model.addAttribute("item", item);
-        return "update"; // update.jsp
+        return "/WEB-INF/views/update"; // update.jsp
     }
 
     // HANDLE UPDATE
@@ -111,7 +111,7 @@ public class ViewController {
     public String updateItem(@ModelAttribute InventoryItem updatedItem, HttpSession session) {
         if (session.getAttribute("user") == null) return "redirect:/";
         repository.save(updatedItem);
-        return "redirect:/inventory";
+        return "redirect:/WEB-INF/views/inventory";
     }
 
     // DELETE ITEM
@@ -119,7 +119,7 @@ public class ViewController {
     public String deleteItem(@RequestParam Long id, HttpSession session) {
         if (session.getAttribute("user") == null) return "redirect:/";
         repository.deleteById(id);
-        return "redirect:/inventory";
+        return "redirect:/WEB-INF/views/inventory";
     }
     
     //@GetMapping("/logout")
@@ -154,7 +154,7 @@ public class ViewController {
         model.addAttribute("totalQuantity", totalQuantity);
         model.addAttribute("totalValue", totalValue);
         model.addAttribute("recentItems", recentItems);
-        return "home";
+        return "/WEB-INF/views/home";
     }
     
 }
