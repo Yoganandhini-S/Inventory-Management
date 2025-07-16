@@ -79,11 +79,7 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-<<<<<<< HEAD
-       
-=======
->>>>>>> 842ce81 (Updated after pull and merged local changes)
-        
+
         
 
     </dependencies>
