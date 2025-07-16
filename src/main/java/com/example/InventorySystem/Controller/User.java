@@ -1,5 +1,9 @@
 package com.example.InventorySystem.Controller;
 
+
+
+
+
 import jakarta.persistence.*;
 
 @Entity
@@ -25,3 +29,4 @@ public class User {
 	}
 
 }
+

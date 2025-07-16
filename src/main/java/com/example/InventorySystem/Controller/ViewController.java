@@ -1,7 +1,7 @@
 package com.example.InventorySystem.Controller;
 
 import com.example.InventorySystem.model.InventoryItem;
-//import com.example.InventorySystem.model.User;
+//import com.example.InventorySystem.Controller.User;
 import com.example.InventorySystem.repository.InventoryRepository;
 import com.example.InventorySystem.repository.UserRepository;
 

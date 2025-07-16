@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  mysql-inventory:
+    image: mysql:8
+    container_name: inventory-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Yoga@435
+      MYSQL_DATABASE: inventory
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  app:
+   
+    build: .
+    
+    container_name: inventory-app
+    depends_on:
+      - mysql-inventory
+    ports:
+      - "8087:8087"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-inventory:3306/inventory
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Yoga@435
+      restart: always
+
+volumes:
+  mysql_data:
+
